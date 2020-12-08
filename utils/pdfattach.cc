@@ -45,7 +45,11 @@ static bool fileExists(const char *filePath)
     return false;
 }
 
-int main(int argc, char *argv[])
+extern "C" {
+    int pdfattach(int argc, char *argv[]);
+}
+
+int pdfattach(int argc, char *argv[])
 {
     Win32Console win32Console(&argc, &argv);
 

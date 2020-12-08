@@ -94,7 +94,10 @@ static const ArgDesc argDesc[] = { { "-f", argInt, &firstPage, 0, "first page to
                                    { "-?", argFlag, &printHelp, 0, "print usage information" },
                                    {} };
 
-int main(int argc, char *argv[])
+extern "C" {
+    int pdfimages(int argc, char *argv[]);
+}
+int pdfimages(int argc, char *argv[])
 {
     PDFDoc *doc;
     GooString *fileName;

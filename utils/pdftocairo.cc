@@ -848,7 +848,11 @@ static void checkInvalidImageOption(bool option, const char *option_name)
     }
 }
 
-int main(int argc, char *argv[])
+extern "C" {
+    int pdftocairo(int argc, char *argv[]);
+}
+
+int pdftocairo(int argc, char *argv[])
 {
     PDFDoc *doc;
     GooString *fileName = nullptr;

@@ -117,8 +117,13 @@ static void doMergeFormDict(Dict *srcFormDict, Dict *mergeFormDict, int numOffse
     }
 }
 
+extern "C" {
+    // Declare this so it's exported as non-mangled symbol "_pdfunite"
+    int pdfunite(int argc, char *argv[]);
+}
+
 ///////////////////////////////////////////////////////////////////////////
-int main(int argc, char *argv[])
+int pdfunite(int argc, char *argv[])
 ///////////////////////////////////////////////////////////////////////////
 // Merge PDF files given by arguments 1 to argc-2 and write the result
 // to the file specified by argument argc-1.

@@ -134,7 +134,11 @@ static bool extractPages(const char *srcFileName, const char *destFileName)
     return true;
 }
 
-int main(int argc, char *argv[])
+extern "C" {
+    int pdfseparate(int argc, char *argv[]);
+}
+
+int pdfseparate(int argc, char *argv[])
 {
     bool ok;
     int exitCode;

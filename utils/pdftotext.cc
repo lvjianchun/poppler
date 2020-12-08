@@ -150,7 +150,11 @@ static std::string myXmlTokenReplace(const char *inString)
     return myString;
 }
 
-int main(int argc, char *argv[])
+extern "C" {
+    int pdftotext(int argc, char *argv[]);
+}
+
+int pdftotext(int argc, char *argv[])
 {
     PDFDoc *doc;
     GooString *fileName;

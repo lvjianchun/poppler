@@ -1,52 +1,104 @@
-# - Try to find the  Fontconfig
-# Once done this will define
-#
-#  FONTCONFIG_FOUND - system has Fontconfig
-#  FONTCONFIG_INCLUDE_DIR - The include directory to use for the fontconfig headers
-#  FONTCONFIG_LIBRARIES - Link these to use FONTCONFIG
-#  FONTCONFIG_DEFINITIONS - Compiler switches required for using FONTCONFIG
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file Copyright.txt or https://cmake.org/licensing for details.
 
-# Copyright (c) 2006,2007 Laurent Montel, <montel@kde.org>
-#
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+#[=======================================================================[.rst:
+FindFontconfig
+--------------
 
-# NOTE: Once required cmake >=3.14, consider using built-in FindFontconfig
-#       See Poppler issue #955 for details
+Find Fontconfig headers and library.
 
-if (FONTCONFIG_LIBRARIES AND FONTCONFIG_INCLUDE_DIR)
+Imported Targets
+^^^^^^^^^^^^^^^^
 
-  # in cache already
-  set(FONTCONFIG_FOUND TRUE)
+``Fontconfig::Fontconfig``
+  The Fontconfig library, if found.
 
-else (FONTCONFIG_LIBRARIES AND FONTCONFIG_INCLUDE_DIR)
+Result Variables
+^^^^^^^^^^^^^^^^
 
-  if (NOT WIN32)
-    # use pkg-config to get the directories and then use these values
-    # in the FIND_PATH() and FIND_LIBRARY() calls
-    find_package(PkgConfig)
-    pkg_check_modules(PC_FONTCONFIG fontconfig)
+This will define the following variables in your project:
 
-    set(FONTCONFIG_DEFINITIONS ${PC_FONTCONFIG_CFLAGS_OTHER})
-  endif (NOT WIN32)
+``Fontconfig_FOUND``
+  true if (the requested version of) Fontconfig is available.
+``Fontconfig_VERSION``
+  the version of Fontconfig.
+``Fontconfig_LIBRARIES``
+  the libraries to link against to use Fontconfig.
+``Fontconfig_INCLUDE_DIRS``
+  where to find the Fontconfig headers.
+``Fontconfig_COMPILE_OPTIONS``
+  this should be passed to target_compile_options(), if the
+  target is not used for linking
 
-  find_path(FONTCONFIG_INCLUDE_DIR fontconfig/fontconfig.h
-    PATHS
-    ${PC_FONTCONFIG_INCLUDEDIR}
-    ${PC_FONTCONFIG_INCLUDE_DIRS}
+#]=======================================================================]
+
+
+# use pkg-config to get the directories and then use these values
+# in the FIND_PATH() and FIND_LIBRARY() calls
+find_package(PkgConfig)
+pkg_check_modules(PKG_FONTCONFIG fontconfig)
+set(Fontconfig_COMPILE_OPTIONS ${PKG_FONTCONFIG_CFLAGS_OTHER})
+set(Fontconfig_VERSION ${PKG_FONTCONFIG_VERSION})
+
+find_path( Fontconfig_INCLUDE_DIR
+  NAMES
+    fontconfig/fontconfig.h
+  HINTS
+    ${PKG_FONTCONFIG_INCLUDE_DIRS}
     /usr/X11/include
+)
+
+find_library( Fontconfig_LIBRARY
+  NAMES
+    fontconfig
+  PATHS
+    ${PKG_FONTCONFIG_LIBRARY_DIRS}
+)
+
+set(Fontconfig_INCLUDE_DIR "/src/out/include")
+set(Fontconfig_LIBRARY "/src/out/lib/libfontconfig.a")
+
+if (Fontconfig_INCLUDE_DIR AND NOT Fontconfig_VERSION)
+  file(STRINGS ${Fontconfig_INCLUDE_DIR}/fontconfig/fontconfig.h _contents REGEX "^#define[ \t]+FC_[A-Z]+[ \t]+[0-9]+$")
+  unset(Fontconfig_VERSION)
+  foreach(VPART MAJOR MINOR REVISION)
+    foreach(VLINE ${_contents})
+      if(VLINE MATCHES "^#define[\t ]+FC_${VPART}[\t ]+([0-9]+)$")
+        set(Fontconfig_VERSION_PART "${CMAKE_MATCH_1}")
+        if(Fontconfig_VERSION)
+          string(APPEND Fontconfig_VERSION ".${Fontconfig_VERSION_PART}")
+        else()
+          set(Fontconfig_VERSION "${Fontconfig_VERSION_PART}")
+        endif()
+      endif()
+    endforeach()
+  endforeach()
+endif ()
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Fontconfig
+  FOUND_VAR
+    Fontconfig_FOUND
+  REQUIRED_VARS
+    Fontconfig_LIBRARY
+    Fontconfig_INCLUDE_DIR
+  VERSION_VAR
+    Fontconfig_VERSION
+)
+
+
+if(Fontconfig_FOUND AND NOT TARGET Fontconfig::Fontconfig)
+  add_library(Fontconfig::Fontconfig UNKNOWN IMPORTED)
+  set_target_properties(Fontconfig::Fontconfig PROPERTIES
+    IMPORTED_LOCATION "${Fontconfig_LIBRARY}"
+    INTERFACE_COMPILE_OPTIONS "${Fontconfig_COMPILE_OPTIONS}"
+    INTERFACE_INCLUDE_DIRECTORIES "${Fontconfig_INCLUDE_DIR}"
   )
+endif()
 
-  find_library(FONTCONFIG_LIBRARIES NAMES fontconfig
-    PATHS
-    ${PC_FONTCONFIG_LIBDIR}
-    ${PC_FONTCONFIG_LIBRARY_DIRS}
-  )
+mark_as_advanced(Fontconfig_LIBRARY Fontconfig_INCLUDE_DIR)
 
-  include(FindPackageHandleStandardArgs)
-  FIND_PACKAGE_HANDLE_STANDARD_ARGS(Fontconfig DEFAULT_MSG FONTCONFIG_LIBRARIES FONTCONFIG_INCLUDE_DIR )
-  
-  mark_as_advanced(FONTCONFIG_LIBRARIES FONTCONFIG_INCLUDE_DIR)
-
-endif (FONTCONFIG_LIBRARIES AND FONTCONFIG_INCLUDE_DIR)
-
+if(Fontconfig_FOUND)
+  set(Fontconfig_LIBRARIES ${Fontconfig_LIBRARY})
+  set(Fontconfig_INCLUDE_DIRS ${Fontconfig_INCLUDE_DIR})
+endif()

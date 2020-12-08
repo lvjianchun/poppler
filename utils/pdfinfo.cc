@@ -805,7 +805,11 @@ static void printInfo(PDFDoc *doc, const UnicodeMap *uMap, long long filesize, b
     printPdfSubtype(doc, uMap);
 }
 
-int main(int argc, char *argv[])
+extern "C" {
+    int pdfinfo(int argc, char *argv[]);
+}
+
+int pdfinfo(int argc, char *argv[])
 {
     PDFDoc *doc;
     GooString *fileName;

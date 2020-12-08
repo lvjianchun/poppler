@@ -70,7 +70,11 @@ static const ArgDesc argDesc[] = { { "-list", argFlag, &doList, 0, "list all emb
                                    { "-?", argFlag, &printHelp, 0, "print usage information" },
                                    {} };
 
-int main(int argc, char *argv[])
+extern "C" {
+    int pdfdetach(int argc, char *argv[]);
+}
+
+int pdfdetach(int argc, char *argv[])
 {
     GooString *fileName;
     const UnicodeMap *uMap;

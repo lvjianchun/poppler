@@ -158,7 +158,11 @@ SplashOutputDevNoText::~SplashOutputDevNoText() = default;
 
 #endif
 
-int main(int argc, char *argv[])
+extern "C" {
+    int pdftohtml(int argc, char *argv[]);
+}
+
+int pdftohtml(int argc, char *argv[])
 {
     PDFDoc *doc = nullptr;
     GooString *fileName = nullptr;
