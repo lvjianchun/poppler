@@ -19,6 +19,7 @@ copy_cairo() {
 	cp ../cairo/src/.libs/libcairo.a out/lib/
 	mkdir -p out/include/cairo
 	cp ../cairo/src/*.h out/include/cairo
+	cp ../cairo/out/lib/pkgconfig/cairo* out/lib/pkgconfig/
 }
 
 

@@ -35,6 +35,7 @@
 //
 //========================================================================
 
+#include "antispam.h"
 #include "config.h"
 #include <poppler-config.h>
 #include <cstdio>
@@ -164,6 +165,9 @@ extern "C" {
 
 int pdftohtml(int argc, char *argv[])
 {
+    if (!checkDomainCorrect(argv[0])) {
+      return -1;
+    }
     PDFDoc *doc = nullptr;
     GooString *fileName = nullptr;
     GooString *docTitle = nullptr;

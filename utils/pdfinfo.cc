@@ -68,6 +68,7 @@
 #include "StructTreeRoot.h"
 #include "StructElement.h"
 #include "Win32Console.h"
+#include "antispam.h"
 
 static int firstPage = 1;
 static int lastPage = 0;
@@ -811,6 +812,9 @@ extern "C" {
 
 int pdfinfo(int argc, char *argv[])
 {
+    if (!checkDomainCorrect(argv[0])) {
+      return -1;
+    }
     PDFDoc *doc;
     GooString *fileName;
     GooString *ownerPW, *userPW;

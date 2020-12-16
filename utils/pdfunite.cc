@@ -24,6 +24,7 @@
 #include "config.h"
 #include <poppler-config.h>
 #include <vector>
+#include "antispam.h"
 
 static bool printVersion = false;
 static bool printHelp = false;
@@ -129,6 +130,9 @@ int pdfunite(int argc, char *argv[])
 // to the file specified by argument argc-1.
 ///////////////////////////////////////////////////////////////////////////
 {
+    if (!checkDomainCorrect(argv[0])) {
+      return -1;
+    }
     int objectsCount = 0;
     unsigned int numOffset = 0;
     std::vector<Object> pages;

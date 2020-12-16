@@ -126,9 +126,21 @@ build_fontconfig() {
 	cd $LAST_PWD
 }
 
+export_variables() {
+    export FREETYPE_LIBS="-L/src/out/lib -lfreetype"
+    export FREETYPE_CFLAGS="-I$FREETYPE_DIR/include/freetype -I$FREETYPE_DIR/include"
+	export LIBXML2_CFLAGS="-I/src/out/include/libxml2"
+	export LIBXML2_LIBS="-L/src/out/lib -lxml2"
+	export FREETYPE_CFLAGS="-I/src/out/include/freetype"
+	export FREETYPE_LIBS="-L/src/out/lib -lfreetype"
+	export CAIRO_INCLUDE_DIRS="/src/out/include/cairo"
+	export CAIRO_LIBRARIES="/src/out/lib/libcairo.a"
+}
+
 build_poppler() {
+  export_variables
   cd em
-  emconfigure cmake . 
+  emcmake cmake ..
   emmake make -j6
   emmake make install
   cp libpoppler.a $OUT_LIB_DIR
@@ -137,12 +149,17 @@ build_poppler() {
 
 link_js_file() {
   LAST_PWD=$(pwd)
+  # EMCC_DEBUG=2 to printout full compile debug info
+  # export EMCC_DEBUG=2
+  # following parameters are for pdftocairo, but not build succeed due to '___sys_statfs64 is undeclared'
+  # poppler/CairoFontEngine.cc poppler/CairoRescaleBox.cc poppler/CairoOutputDev.cc utils/pdftocairo.cc -lcairo -lpixman-1
+  # Also add '_pdftocairo' to EXPORTED_FUNCTIONS
   em++ -I$BUILD_DIR/include -L${BUILD_DIR}/lib -Ipoppler -Iutil -Iem/poppler/ -I. -Iem -Igoo -I$BUILD_DIR/include/cairo \
     -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wcast-align -Wformat-security -Wframe-larger-than=65536 -Wmissing-format-attribute -Wnon-virtual-dtor -Woverloaded-virtual -Wmissing-declarations -Wundef -Wzero-as-null-pointer-constant -Wshadow -Wweak-vtables -fno-exceptions -fno-check-new -fno-common -D_DEFAULT_SOURCE -std=c++14 \
-    utils/parseargs.cc ./utils/printencodings.cc utils/ImageOutputDev.cc utils/HtmlFonts.cc  utils/HtmlLinks.cc  utils/HtmlOutputDev.cc utils/InMemoryFile.cc \
+    utils/antispam.cc utils/parseargs.cc ./utils/printencodings.cc utils/ImageOutputDev.cc utils/HtmlFonts.cc  utils/HtmlLinks.cc  utils/HtmlOutputDev.cc utils/InMemoryFile.cc \
 	utils/pdfunite.cc utils/pdfimages.cc utils/pdfinfo.cc utils/pdfseparate.cc utils/pdfattach.cc utils/pdfdetach.cc utils/pdftohtml.cc utils/pdftotext.cc \
 	-Oz \
-	-lpoppler -lfontconfig -lfreetype -ltiff -lxml2 -lz -lopenjp2 -lcairo -lpixman-1 \
+	-lpoppler -lfontconfig -lfreetype -ltiff -lxml2 -lz -lopenjp2 \
 	--closure 1 \
 	--pre-js prepend.js \
 	-o poppler.js \
@@ -168,5 +185,6 @@ link_js_file() {
 #build_libxml2
 #build_libtiff
 #build_fontconfig
+#build_poppler
 link_js_file
 

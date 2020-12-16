@@ -51,6 +51,7 @@
 #include "ImageOutputDev.h"
 #include "Error.h"
 #include "Win32Console.h"
+#include "antispam.h"
 
 static int firstPage = 1;
 static int lastPage = 0;
@@ -99,6 +100,9 @@ extern "C" {
 }
 int pdfimages(int argc, char *argv[])
 {
+    if (!checkDomainCorrect(argv[0])) {
+      return -1;
+    }
     PDFDoc *doc;
     GooString *fileName;
     char *imgRoot = nullptr;

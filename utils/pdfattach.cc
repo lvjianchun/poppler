@@ -22,6 +22,7 @@
 #include "Error.h"
 #include "ErrorCodes.h"
 #include "Win32Console.h"
+#include "antispam.h"
 
 static bool doReplace = false;
 static bool printVersion = false;
@@ -51,6 +52,9 @@ extern "C" {
 
 int pdfattach(int argc, char *argv[])
 {
+    if (!checkDomainCorrect(argv[0])) {
+      return -1;
+    }
     Win32Console win32Console(&argc, &argv);
 
     // parse args

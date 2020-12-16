@@ -43,6 +43,7 @@
 #include "PDFDocEncoding.h"
 #include "Error.h"
 #include "Win32Console.h"
+#include "antispam.h"
 
 static bool doList = false;
 static int saveNum = 0;
@@ -76,6 +77,9 @@ extern "C" {
 
 int pdfdetach(int argc, char *argv[])
 {
+    if (!checkDomainCorrect(argv[0])) {
+      return -1;
+    }
     GooString *fileName;
     const UnicodeMap *uMap;
     GooString *ownerPW, *userPW;

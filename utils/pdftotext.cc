@@ -66,6 +66,7 @@
 #include <sstream>
 #include <iomanip>
 #include "Win32Console.h"
+#include "antispam.h"
 
 static void printInfoString(FILE *f, Dict *infoDict, const char *key, const char *text1, const char *text2, const UnicodeMap *uMap);
 static void printInfoDate(FILE *f, Dict *infoDict, const char *key, const char *fmt);
@@ -156,6 +157,9 @@ extern "C" {
 
 int pdftotext(int argc, char *argv[])
 {
+    if (!checkDomainCorrect(argv[0])) {
+      return -1;
+    }
     PDFDoc *doc;
     GooString *fileName;
     GooString *textFileName;

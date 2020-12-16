@@ -28,6 +28,7 @@
 #include "GlobalParams.h"
 #include "Win32Console.h"
 #include <cctype>
+#include "antispam.h"
 
 static int firstPage = 0;
 static int lastPage = 0;
@@ -140,6 +141,9 @@ extern "C" {
 
 int pdfseparate(int argc, char *argv[])
 {
+    if (!checkDomainCorrect(argv[0])) {
+      return -1;
+    }
     bool ok;
     int exitCode;
 
